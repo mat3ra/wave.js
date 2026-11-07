@@ -1,7 +1,6 @@
 import type { InMemoryEntity } from "@mat3ra/code/dist/js/entity";
 import { AtomicCoordinateSchema } from "@mat3ra/esse/dist/js/types";
-import type { ConstrainedBasis } from "@mat3ra/made";
-import { Material } from "@mat3ra/made";
+import { ConstrainedBasis, Material } from "@mat3ra/made";
 import * as THREE from "three";
 import { Object3D } from "three";
 

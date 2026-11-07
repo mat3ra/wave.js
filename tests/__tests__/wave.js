@@ -36,7 +36,7 @@ test("spinColorsOfAtomsByStartingMagnetization", async () => {
     wave.renderer.domElement.dispatchEvent(new WheelEvent("wheel", { deltaY: 1 }));
     return takeSnapshotAndAssertEqualityAsync(
         wave.renderer.getContext(),
-        "colorsOfAtomsWithLabels",
+        "spinColorsOfAtomsByStartingMagnetization",
     );
 });
 
