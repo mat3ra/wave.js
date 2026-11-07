@@ -1,6 +1,7 @@
 import type { InMemoryEntity } from "@mat3ra/code/dist/js/entity";
 import { AtomicCoordinateSchema } from "@mat3ra/esse/dist/js/types";
-import { Basis, Material } from "@mat3ra/made";
+import { Material } from "@mat3ra/made";
+import type { ConstrainedBasis } from "@mat3ra/made/dist/js/basis/constrained_basis";
 import * as THREE from "three";
 import { Object3D } from "three";
 
@@ -92,10 +93,10 @@ export const AtomsMixin = (superclass: any) =>
             };
         }
 
-        createAtomsGroup(basis: Basis, atomRadiiScale: number) {
+        createAtomsGroup(basis: ConstrainedBasis, atomRadiiScale: number) {
             const atomsGroup = new THREE.Group();
             atomsGroup.name = ATOM_GROUP_NAME;
-            const { atomicLabelsArray, elementsWithLabelsArray } = basis;
+            const { elementsWithLabelsArray, startingMagnetizationArray } = basis;
             basis.coordinates.forEach(
                 (atomicCoordinate: AtomicCoordinateSchema, atomicIndex: number) => {
                     const element = basis.getElementByIndex(atomicIndex);
@@ -113,12 +114,10 @@ export const AtomsMixin = (superclass: any) =>
                         atomicIndex,
                     };
                     const atomColor = this.getAtomColorByElement(element).toLowerCase();
-                    const label = parseInt(atomicLabelsArray[atomicIndex], 10) || 0;
-                    // set glow according to the label value as offset, currently
-                    // only single digit numeric labels are allowed, in practice we
-                    // expect only two different labels: 1 and 2 for up and down
-                    // spin representations
-                    ApplyGlow(sphereMesh, atomColor, label);
+                    const magnetizationSign = Math.sign(startingMagnetizationArray[atomicIndex]);
+                    // ApplyGlow offset 1 (odd) shows spin up, 2 (even) spin down
+                    const glowOffset = magnetizationSign < 0 ? 2 : magnetizationSign;
+                    ApplyGlow(sphereMesh, atomColor, glowOffset);
                     atomsGroup.add(sphereMesh);
                 },
             );
