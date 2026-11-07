@@ -26,7 +26,7 @@ test("atomRepetitions", async () => {
     return takeSnapshotAndAssertEqualityAsync(wave.renderer.getContext(), "atomRepetitions");
 });
 
-test("colorsOfAtomsWithLabels", async () => {
+test("spinColorsOfAtomsByStartingMagnetization", async () => {
     const wave = getFeOWaveInstance();
     // zoom-out to get full view of the cell
     wave.toggleOrbitControls();

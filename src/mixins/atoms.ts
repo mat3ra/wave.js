@@ -115,7 +115,6 @@ export const AtomsMixin = (superclass: any) =>
                     };
                     const atomColor = this.getAtomColorByElement(element).toLowerCase();
                     const magnetizationSign = Math.sign(startingMagnetizationArray[atomicIndex]);
-                    // ApplyGlow offset 1 (odd) shows spin up, 2 (even) spin down
                     const glowOffset = magnetizationSign < 0 ? 2 : magnetizationSign;
                     ApplyGlow(sphereMesh, atomColor, glowOffset);
                     atomsGroup.add(sphereMesh);

@@ -712,7 +712,7 @@ describe("Interactive structure editor functionality tests", () => {
                 const wave = getFeOWaveInstance({});
                 wave.enableEditMode(true);
 
-                // FeO: Fe +0.5, Fe -0.5, O, O. The added O takes the next free id, the removed Fe's.
+                // FeO: Fe +0.5, Fe -0.5, O, O. The added O takes max(id) + 1, the removed Fe's id.
                 selectedIndicesPerRemoval.forEach((selectedIndices) => {
                     const atoms = wave.collectSelectableAtoms();
                     wave.setSelectedAtomMeshes(selectedIndices.map((index) => atoms[index]));

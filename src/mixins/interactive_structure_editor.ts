@@ -898,8 +898,8 @@ export const InteractiveStructureEditorMixin = (superclass: any) =>
 
         /**
          * Applies a basis mutation to a clone of the wave's own current structure, preserving
-         * its lattice, units, metadata, labels, and constraints exactly - only the fields the
-         * callback actually touches change. This replaces the old approach of re-deriving the
+         * its lattice, units, metadata, labels, starting magnetization, and constraints exactly -
+         * only the fields the callback actually touches change. This replaces re-deriving the
          * whole material from the live Three.js scene on every edit (ThreeDSceneDataToMaterial),
          * which was a lossy round trip: it reintroduced the lattice to only ~1e-7 precision
          * (causing spurious camera resets, D1) and could pick up bond/boundary/repetition meshes
