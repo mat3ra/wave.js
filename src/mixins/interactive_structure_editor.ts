@@ -965,6 +965,11 @@ export const InteractiveStructureEditorMixin = (superclass: any) =>
                 if (basis.labels?.length) {
                     basis.labels = basis.labels.filter((label: any) => label.id !== removedId);
                 }
+                if (basis.startingMagnetization?.length) {
+                    basis.startingMagnetization = basis.startingMagnetization.filter(
+                        (magnetization: any) => magnetization.id !== removedId,
+                    );
+                }
                 if (basis.constraints?.length) {
                     basis.constraints = basis.constraints.filter(
                         (constraint: any) => constraint.id !== removedId,
@@ -1009,6 +1014,11 @@ export const InteractiveStructureEditorMixin = (superclass: any) =>
                 );
                 if (basis.labels?.length) {
                     basis.labels = basis.labels.filter((label: any) => !removedIds.has(label.id));
+                }
+                if (basis.startingMagnetization?.length) {
+                    basis.startingMagnetization = basis.startingMagnetization.filter(
+                        (magnetization: any) => !removedIds.has(magnetization.id),
+                    );
                 }
                 if (basis.constraints?.length) {
                     basis.constraints = basis.constraints.filter(

@@ -2,7 +2,7 @@ import expect from "expect";
 import * as THREE from "three";
 
 import settings from "../../../src/settings";
-import { getWaveInstance } from "../../enums";
+import { getFeOWaveInstance, getWaveInstance } from "../../enums";
 import {
     getWaveWithRecordedCallbacks,
     projectMeshToScreen,
@@ -701,6 +701,19 @@ describe("Interactive structure editor functionality tests", () => {
             expect(wave.collectSelectableAtoms().length).toBe(initialCount - atoms.length);
             expect(structureModifiedCalls.length).toBe(1);
             expect(wave.selectedMeshes_).toEqual([]);
+        });
+
+        test("An atom added after a removal does not inherit a removed atom's starting magnetization", () => {
+            const wave = getFeOWaveInstance({});
+            wave.enableEditMode(true);
+
+            // FeO: Fe +0.5, Fe -0.5, O, O. The added O takes the next free id, the removed Fe's.
+            const [, ...removedAtoms] = wave.collectSelectableAtoms();
+            wave.setSelectedAtomMeshes(removedAtoms);
+            wave.removeSelectedAtom();
+            wave.addAtom("O", [0, 0, 0]);
+
+            expect(wave.structure.getBasis().startingMagnetizationArray).toEqual([0.5, 0]);
         });
 
         test("A multi-selection survives an edit-mode disable/re-enable cycle (R12, extended to groups)", () => {
