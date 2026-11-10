@@ -955,26 +955,7 @@ export const InteractiveStructureEditorMixin = (superclass: any) =>
             const targetIndex = this.selectedMesh_.userData.atomicIndex;
 
             const newMaterial = this.applyBasisDelta_((basis: any) => {
-                const removedId = basis.elements[targetIndex]?.id;
-                basis.elements = basis.elements.filter(
-                    (_element: any, index: number) => index !== targetIndex,
-                );
-                basis.coordinates = basis.coordinates.filter(
-                    (_coordinate: any, index: number) => index !== targetIndex,
-                );
-                if (basis.labels?.length) {
-                    basis.labels = basis.labels.filter((label: any) => label.id !== removedId);
-                }
-                if (basis.magneticMoments?.length) {
-                    basis.magneticMoments = basis.magneticMoments.filter(
-                        (magneticMoment: any) => magneticMoment.id !== removedId,
-                    );
-                }
-                if (basis.constraints?.length) {
-                    basis.constraints = basis.constraints.filter(
-                        (constraint: any) => constraint.id !== removedId,
-                    );
-                }
+                basis.removeAtomsByIds([basis.elements[targetIndex].id]);
             });
 
             this.clearSelection();
@@ -1001,30 +982,7 @@ export const InteractiveStructureEditorMixin = (superclass: any) =>
             if (targetIndices.size === 0) return;
 
             const newMaterial = this.applyBasisDelta_((basis: any) => {
-                const removedIds = new Set(
-                    [...targetIndices]
-                        .map((index) => basis.elements[index]?.id)
-                        .filter((id) => id !== undefined),
-                );
-                basis.elements = basis.elements.filter(
-                    (_element: any, index: number) => !targetIndices.has(index),
-                );
-                basis.coordinates = basis.coordinates.filter(
-                    (_coordinate: any, index: number) => !targetIndices.has(index),
-                );
-                if (basis.labels?.length) {
-                    basis.labels = basis.labels.filter((label: any) => !removedIds.has(label.id));
-                }
-                if (basis.magneticMoments?.length) {
-                    basis.magneticMoments = basis.magneticMoments.filter(
-                        (magneticMoment: any) => !removedIds.has(magneticMoment.id),
-                    );
-                }
-                if (basis.constraints?.length) {
-                    basis.constraints = basis.constraints.filter(
-                        (constraint: any) => !removedIds.has(constraint.id),
-                    );
-                }
+                basis.removeAtomsByIds([...targetIndices].map((index) => basis.elements[index].id));
             });
 
             this.clearSelection();

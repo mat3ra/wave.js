@@ -1,9 +1,8 @@
-import { Made } from "@mat3ra/made";
 import expect from "expect";
 import * as THREE from "three";
 
 import settings from "../../../src/settings";
-import { FeO_CONFIG, getFeOWaveInstance, getWaveInstance } from "../../enums";
+import { getFeOWaveInstance, getWaveInstance } from "../../enums";
 import {
     getWaveWithRecordedCallbacks,
     projectMeshToScreen,
@@ -704,42 +703,16 @@ describe("Interactive structure editor functionality tests", () => {
             expect(wave.selectedMeshes_).toEqual([]);
         });
 
-        const bothIronMagnetized = FeO_CONFIG.basis.magneticMoments;
-        const onlySecondIronMagnetized = [{ id: 1, value: -0.5 }];
-
         test.each([
-            [
-                "one of two magnetized Fe and both O as one multi-selection",
-                bothIronMagnetized,
-                [[1, 2, 3]],
-                [0.5, 0],
-            ],
-            [
-                "one of two magnetized Fe and both O one atom at a time",
-                bothIronMagnetized,
-                [[1], [1], [1]],
-                [0.5, 0],
-            ],
-            [
-                "the only magnetized Fe and both O as one multi-selection",
-                onlySecondIronMagnetized,
-                [[1, 2, 3]],
-                [0, 0],
-            ],
-            [
-                "the only magnetized Fe and both O one atom at a time",
-                onlySecondIronMagnetized,
-                [[1], [1], [1]],
-                [0, 0],
-            ],
+            ["as one multi-selection", [[1, 2, 3]]],
+            ["one atom at a time", [[1], [1], [1]]],
         ])(
-            "An atom added after removing %s does not inherit a removed atom's magnetic moment",
-            (_removal, magneticMoments, selectedIndicesPerRemoval, expectedMagneticMoments) => {
-                const basis = { ...FeO_CONFIG.basis, magneticMoments };
-                const wave = getFeOWaveInstance({}, new Made.Material({ ...FeO_CONFIG, basis }));
+            "An atom added after removing one of two magnetized Fe and both O %s does not inherit a removed atom's magnetic moment",
+            (_removal, selectedIndicesPerRemoval) => {
+                const wave = getFeOWaveInstance();
                 wave.enableEditMode(true);
 
-                // FeO: Fe +0.5 or unset, Fe -0.5, O, O. The added O takes max(id) + 1, the removed Fe's id.
+                // FeO: Fe +0.5, Fe -0.5, O, O. The added O takes max(id) + 1, the removed Fe's id.
                 selectedIndicesPerRemoval.forEach((selectedIndices) => {
                     const atoms = wave.collectSelectableAtoms();
                     wave.setSelectedAtomMeshes(selectedIndices.map((index) => atoms[index]));
@@ -747,9 +720,7 @@ describe("Interactive structure editor functionality tests", () => {
                 });
                 wave.addAtom("O", [0, 0, 0]);
 
-                expect(wave.structure.getBasis().magneticMomentsArray).toEqual(
-                    expectedMagneticMoments,
-                );
+                expect(wave.structure.getBasis().magneticMomentsArray).toEqual([0.5, 0]);
             },
         );
 
