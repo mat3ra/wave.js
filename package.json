@@ -62,7 +62,7 @@
         "@mat3ra/code": "2026.8.18-0",
         "@mat3ra/cove": "2026.8.19-4",
         "@mat3ra/esse": "https://github.com/mat3ra/esse/releases/download/wip-2236fcf/esse.tgz",
-        "@mat3ra/made": "https://github.com/mat3ra/made/releases/download/wip-f6958be/made.tgz",
+        "@mat3ra/made": "https://github.com/mat3ra/made/releases/download/wip-e941589/made.tgz",
         "@mat3ra/tsconfig": "^2024.6.3-0",
         "@mat3ra/utils": "2026.8.18-1",
         "@types/react": "^18.2.8",
