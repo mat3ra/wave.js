@@ -704,7 +704,7 @@ describe("Interactive structure editor functionality tests", () => {
             expect(wave.selectedMeshes_).toEqual([]);
         });
 
-        const bothIronMagnetized = FeO_CONFIG.basis.startingMagnetization;
+        const bothIronMagnetized = FeO_CONFIG.basis.magneticMoments;
         const onlySecondIronMagnetized = [{ id: 1, value: -0.5 }];
 
         test.each([
@@ -733,14 +733,9 @@ describe("Interactive structure editor functionality tests", () => {
                 [0, 0],
             ],
         ])(
-            "An atom added after removing %s does not inherit a removed atom's starting magnetization",
-            (
-                _removal,
-                startingMagnetization,
-                selectedIndicesPerRemoval,
-                expectedStartingMagnetization,
-            ) => {
-                const basis = { ...FeO_CONFIG.basis, startingMagnetization };
+            "An atom added after removing %s does not inherit a removed atom's magnetic moment",
+            (_removal, magneticMoments, selectedIndicesPerRemoval, expectedMagneticMoments) => {
+                const basis = { ...FeO_CONFIG.basis, magneticMoments };
                 const wave = getFeOWaveInstance({}, new Made.Material({ ...FeO_CONFIG, basis }));
                 wave.enableEditMode(true);
 
@@ -752,8 +747,8 @@ describe("Interactive structure editor functionality tests", () => {
                 });
                 wave.addAtom("O", [0, 0, 0]);
 
-                expect(wave.structure.getBasis().startingMagnetizationArray).toEqual(
-                    expectedStartingMagnetization,
+                expect(wave.structure.getBasis().magneticMomentsArray).toEqual(
+                    expectedMagneticMoments,
                 );
             },
         );

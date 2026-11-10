@@ -95,7 +95,7 @@ export const AtomsMixin = (superclass: any) =>
         createAtomsGroup(basis: ConstrainedBasis, atomRadiiScale: number) {
             const atomsGroup = new THREE.Group();
             atomsGroup.name = ATOM_GROUP_NAME;
-            const { elementsWithLabelsArray, startingMagnetizationArray } = basis;
+            const { elementsWithLabelsArray, magneticMomentsArray } = basis;
             basis.coordinates.forEach(
                 (atomicCoordinate: AtomicCoordinateSchema, atomicIndex: number) => {
                     const element = basis.getElementByIndex(atomicIndex);
@@ -113,7 +113,7 @@ export const AtomsMixin = (superclass: any) =>
                         atomicIndex,
                     };
                     const atomColor = this.getAtomColorByElement(element).toLowerCase();
-                    const magnetizationSign = Math.sign(startingMagnetizationArray[atomicIndex]);
+                    const magnetizationSign = Math.sign(magneticMomentsArray[atomicIndex]);
                     const glowOffset = magnetizationSign < 0 ? 2 : magnetizationSign;
                     ApplyGlow(sphereMesh, atomColor, glowOffset);
                     atomsGroup.add(sphereMesh);

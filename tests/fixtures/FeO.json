@@ -38,7 +38,7 @@
             }
         ],
         "units": "crystal",
-        "startingMagnetization": [
+        "magneticMoments": [
             {
                 "id": 0,
                 "value": 0.5

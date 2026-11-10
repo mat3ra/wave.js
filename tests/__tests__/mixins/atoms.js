@@ -58,7 +58,7 @@ describe("Atoms functionality tests", () => {
         });
     });
 
-    test("the spin glow follows the sign of the starting magnetization", () => {
+    test("the spin glow follows the sign of the magnetic moment", () => {
         const wave = getFeOWaveInstance();
         const [spinUpIron, spinDownIron, oxygen] = wave.getAtomGroups();
         const ironColor = wave.getAtomColorByElement("Fe").toLowerCase();

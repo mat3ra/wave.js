@@ -898,7 +898,7 @@ export const InteractiveStructureEditorMixin = (superclass: any) =>
 
         /**
          * Applies a basis mutation to a clone of the wave's own current structure, preserving
-         * its lattice, units, metadata, labels, starting magnetization, and constraints exactly -
+         * its lattice, units, metadata, labels, magnetic moments, and constraints exactly -
          * only the fields the callback actually touches change. This replaces re-deriving the
          * whole material from the live Three.js scene on every edit (ThreeDSceneDataToMaterial),
          * which was a lossy round trip: it reintroduced the lattice to only ~1e-7 precision
@@ -965,9 +965,9 @@ export const InteractiveStructureEditorMixin = (superclass: any) =>
                 if (basis.labels?.length) {
                     basis.labels = basis.labels.filter((label: any) => label.id !== removedId);
                 }
-                if (basis.startingMagnetization?.length) {
-                    basis.startingMagnetization = basis.startingMagnetization.filter(
-                        (magnetization: any) => magnetization.id !== removedId,
+                if (basis.magneticMoments?.length) {
+                    basis.magneticMoments = basis.magneticMoments.filter(
+                        (magneticMoment: any) => magneticMoment.id !== removedId,
                     );
                 }
                 if (basis.constraints?.length) {
@@ -1015,9 +1015,9 @@ export const InteractiveStructureEditorMixin = (superclass: any) =>
                 if (basis.labels?.length) {
                     basis.labels = basis.labels.filter((label: any) => !removedIds.has(label.id));
                 }
-                if (basis.startingMagnetization?.length) {
-                    basis.startingMagnetization = basis.startingMagnetization.filter(
-                        (magnetization: any) => !removedIds.has(magnetization.id),
+                if (basis.magneticMoments?.length) {
+                    basis.magneticMoments = basis.magneticMoments.filter(
+                        (magneticMoment: any) => !removedIds.has(magneticMoment.id),
                     );
                 }
                 if (basis.constraints?.length) {

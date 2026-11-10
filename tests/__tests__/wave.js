@@ -26,7 +26,7 @@ test("atomRepetitions", async () => {
     return takeSnapshotAndAssertEqualityAsync(wave.renderer.getContext(), "atomRepetitions");
 });
 
-test("spinColorsOfAtomsByStartingMagnetization", async () => {
+test("spinColorsOfAtomsByMagneticMoments", async () => {
     const wave = getFeOWaveInstance();
     // zoom-out to get full view of the cell
     wave.toggleOrbitControls();
@@ -36,7 +36,7 @@ test("spinColorsOfAtomsByStartingMagnetization", async () => {
     wave.renderer.domElement.dispatchEvent(new WheelEvent("wheel", { deltaY: 1 }));
     return takeSnapshotAndAssertEqualityAsync(
         wave.renderer.getContext(),
-        "spinColorsOfAtomsByStartingMagnetization",
+        "spinColorsOfAtomsByMagneticMoments",
     );
 });
 
