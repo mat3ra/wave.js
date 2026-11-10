@@ -113,8 +113,8 @@ export const AtomsMixin = (superclass: any) =>
                         atomicIndex,
                     };
                     const atomColor = this.getAtomColorByElement(element).toLowerCase();
-                    const magnetizationSign = Math.sign(magneticMomentsArray[atomicIndex]);
-                    const glowOffset = magnetizationSign < 0 ? 2 : magnetizationSign;
+                    const magneticMomentSign = Math.sign(magneticMomentsArray[atomicIndex]);
+                    const glowOffset = magneticMomentSign < 0 ? 2 : magneticMomentSign;
                     ApplyGlow(sphereMesh, atomColor, glowOffset);
                     atomsGroup.add(sphereMesh);
                 },
