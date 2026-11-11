@@ -19,7 +19,7 @@ export const ELEMENT_PROPERTIES = {
 const materialJsonFilePath = path.resolve(__dirname, "fixtures/material.json");
 export const MATERIAL_CONFIG = JSON.parse(fs.readFileSync(materialJsonFilePath));
 
-// config for material with atomic labels
+// config for FeO with Fe +0.5 / -0.5 magnetic moments
 const FeOJsonFilePath = path.resolve(__dirname, "fixtures/FeO.json");
 export const FeO_CONFIG = JSON.parse(fs.readFileSync(FeOJsonFilePath));
 
