@@ -33,8 +33,7 @@ export const UtilsMixin = (superclass) =>
  * Applies glow to a THREE object.
  * @param meshObjet {Object}: THREE mesh object.
  * @param baseColor {String}: hex color string of the glow
- * @param offset {Number}: can be a single digit number, 0 means no offset; offset 1 shifts the hue
- *     by -0.1 and offset 2 by +0.1: 1 marks positive and 2 negative magnetic moment
+ * @param offset {Number}: can be a single digit number, 0 means no offset
  */
 export const ApplyGlow = (meshObjet, baseColor, offset = 0) => {
     const atomHSL = {};
