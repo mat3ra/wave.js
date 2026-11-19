@@ -38,14 +38,14 @@
             }
         ],
         "units": "crystal",
-        "labels": [
+        "magneticMoments": [
             {
                 "id": 0,
-                "value": 1
+                "value": 0.5
             },
             {
                 "id": 1,
-                "value": 2
+                "value": -0.5
             }
         ],
         "constraints": [

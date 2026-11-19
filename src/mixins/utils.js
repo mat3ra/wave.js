@@ -41,11 +41,9 @@ export const ApplyGlow = (meshObjet, baseColor, offset = 0) => {
     let hue, saturation;
     if (offset !== 0) {
         if (offset % 2 === 0) {
-            // even labels
             hue = atomHSL.h + (offset * 0.1) / 2;
             saturation = atomHSL.s + (offset * 0.1) / 2;
         } else {
-            // odd labels
             hue = atomHSL.h - ((offset + 1) * 0.1) / 2;
             saturation = atomHSL.s + ((offset + 1) * 0.1) / 2;
         }

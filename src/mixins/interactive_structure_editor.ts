@@ -898,8 +898,8 @@ export const InteractiveStructureEditorMixin = (superclass: any) =>
 
         /**
          * Applies a basis mutation to a clone of the wave's own current structure, preserving
-         * its lattice, units, metadata, labels, and constraints exactly - only the fields the
-         * callback actually touches change. This replaces the old approach of re-deriving the
+         * its lattice, units, metadata, labels, magnetic moments, and constraints exactly -
+         * only the fields the callback actually touches change. This replaces re-deriving the
          * whole material from the live Three.js scene on every edit (ThreeDSceneDataToMaterial),
          * which was a lossy round trip: it reintroduced the lattice to only ~1e-7 precision
          * (causing spurious camera resets, D1) and could pick up bond/boundary/repetition meshes
@@ -955,21 +955,7 @@ export const InteractiveStructureEditorMixin = (superclass: any) =>
             const targetIndex = this.selectedMesh_.userData.atomicIndex;
 
             const newMaterial = this.applyBasisDelta_((basis: any) => {
-                const removedId = basis.elements[targetIndex]?.id;
-                basis.elements = basis.elements.filter(
-                    (_element: any, index: number) => index !== targetIndex,
-                );
-                basis.coordinates = basis.coordinates.filter(
-                    (_coordinate: any, index: number) => index !== targetIndex,
-                );
-                if (basis.labels?.length) {
-                    basis.labels = basis.labels.filter((label: any) => label.id !== removedId);
-                }
-                if (basis.constraints?.length) {
-                    basis.constraints = basis.constraints.filter(
-                        (constraint: any) => constraint.id !== removedId,
-                    );
-                }
+                basis.removeAtomsByIds([basis.elements[targetIndex].id]);
             });
 
             this.clearSelection();
@@ -996,25 +982,7 @@ export const InteractiveStructureEditorMixin = (superclass: any) =>
             if (targetIndices.size === 0) return;
 
             const newMaterial = this.applyBasisDelta_((basis: any) => {
-                const removedIds = new Set(
-                    [...targetIndices]
-                        .map((index) => basis.elements[index]?.id)
-                        .filter((id) => id !== undefined),
-                );
-                basis.elements = basis.elements.filter(
-                    (_element: any, index: number) => !targetIndices.has(index),
-                );
-                basis.coordinates = basis.coordinates.filter(
-                    (_coordinate: any, index: number) => !targetIndices.has(index),
-                );
-                if (basis.labels?.length) {
-                    basis.labels = basis.labels.filter((label: any) => !removedIds.has(label.id));
-                }
-                if (basis.constraints?.length) {
-                    basis.constraints = basis.constraints.filter(
-                        (constraint: any) => !removedIds.has(constraint.id),
-                    );
-                }
+                basis.removeAtomsByIds([...targetIndices].map((index) => basis.elements[index].id));
             });
 
             this.clearSelection();

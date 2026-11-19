@@ -1,7 +1,8 @@
 import { PERIODIC_TABLE } from "@mat3ra/periodic-table";
 import expect from "expect";
 
-import { getWaveInstance } from "../../enums";
+import { ApplyGlow } from "../../../src/mixins/utils";
+import { getFeOWaveInstance, getWaveInstance } from "../../enums";
 
 describe("Atoms functionality tests", () => {
     describe("Atom radii are element-specific (van der Waals)", () => {
@@ -55,5 +56,20 @@ describe("Atoms functionality tests", () => {
                 6,
             );
         });
+    });
+
+    test("the spin glow follows the sign of the magnetic moment", () => {
+        const wave = getFeOWaveInstance();
+        const [spinUpIron, spinDownIron, oxygen] = wave.getAtomGroups();
+        const ironColor = wave.getAtomColorByElement("Fe").toLowerCase();
+        const [spinUpGlow, spinDownGlow] = [1, 2].map((glowOffset) => {
+            const referenceMesh = wave.getSphereMeshObject({ color: ironColor });
+            ApplyGlow(referenceMesh, ironColor, glowOffset);
+            return referenceMesh.material.emissive.getHex();
+        });
+
+        expect(spinUpIron.material.emissive.getHex()).toEqual(spinUpGlow);
+        expect(spinDownIron.material.emissive.getHex()).toEqual(spinDownGlow);
+        expect(oxygen.material.emissiveIntensity).toEqual(1);
     });
 });
