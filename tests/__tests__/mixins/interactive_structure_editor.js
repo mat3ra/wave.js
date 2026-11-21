@@ -1,8 +1,9 @@
+import { Made, ProtoPropertyEnum } from "@mat3ra/made";
 import expect from "expect";
 import * as THREE from "three";
 
 import settings from "../../../src/settings";
-import { getWaveInstance } from "../../enums";
+import { FeO_CONFIG, getWaveInstance } from "../../enums";
 import {
     getWaveWithRecordedCallbacks,
     projectMeshToScreen,
@@ -1366,6 +1367,46 @@ describe("Interactive structure editor functionality tests", () => {
             const [committedMaterial] = structureModifiedCalls[structureModifiedCalls.length - 1];
             const sourceAfter = toValue(committedMaterial.basis.coordinates[sourceIndex]);
             expect(sourceAfter).toEqual(sourceBefore);
+        });
+    });
+
+    describe("Removing atoms drops their entries from every atomic property", () => {
+        // FeO_CONFIG labels atoms 0 and 1 and constrains all four atoms.
+        test("Removing a single atom keeps the other atoms' labels and constraints", () => {
+            const { wave, structureModifiedCalls } = getWaveWithRecordedCallbacks({
+                material: new Made.Material(FeO_CONFIG),
+            });
+            const [firstAtom] = wave.collectSelectableAtoms();
+            wave.selectedMesh_ = firstAtom;
+
+            wave.removeSelectedAtom();
+
+            const [committedMaterial] = structureModifiedCalls[0];
+            const { atomicProperties } = committedMaterial.getBasis();
+            expect(atomicProperties.getByName(ProtoPropertyEnum.atomic_labels).ids).toEqual([1]);
+            expect(atomicProperties.getByName(ProtoPropertyEnum.atomic_labels).values).toEqual([2]);
+            expect(atomicProperties.getByName(ProtoPropertyEnum.atomic_constraints).ids).toEqual([
+                1, 2, 3,
+            ]);
+        });
+
+        test("Removing a multi-selection keeps the other atoms' labels and constraints", () => {
+            const { wave, structureModifiedCalls } = getWaveWithRecordedCallbacks({
+                material: new Made.Material(FeO_CONFIG),
+            });
+            wave.enableEditMode(true);
+            const atoms = wave.collectSelectableAtoms();
+            wave.setSelectedAtomMeshes([atoms[0], atoms[2]]);
+
+            wave.removeSelectedAtom();
+
+            const [committedMaterial] = structureModifiedCalls[0];
+            const { atomicProperties } = committedMaterial.getBasis();
+            expect(atomicProperties.getByName(ProtoPropertyEnum.atomic_labels).ids).toEqual([1]);
+            expect(atomicProperties.getByName(ProtoPropertyEnum.atomic_labels).values).toEqual([2]);
+            expect(atomicProperties.getByName(ProtoPropertyEnum.atomic_constraints).ids).toEqual([
+                1, 3,
+            ]);
         });
     });
 });
