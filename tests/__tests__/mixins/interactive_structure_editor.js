@@ -1370,7 +1370,7 @@ describe("Interactive structure editor functionality tests", () => {
         });
     });
 
-    describe("Removing atoms drops their entries from every atomic property", () => {
+    describe("Atomic properties follow atom ids in edits", () => {
         // FeO_CONFIG labels atoms 0 and 1 and constrains all four atoms.
         test("Removing a single atom keeps the other atoms' labels and constraints", () => {
             const { wave, structureModifiedCalls } = getWaveWithRecordedCallbacks({
@@ -1383,10 +1383,15 @@ describe("Interactive structure editor functionality tests", () => {
 
             const [committedMaterial] = structureModifiedCalls[0];
             const { atomicProperties } = committedMaterial.getBasis();
-            expect(atomicProperties.getByName(ProtoPropertyEnum.atomic_labels).ids).toEqual([1]);
-            expect(atomicProperties.getByName(ProtoPropertyEnum.atomic_labels).values).toEqual([2]);
-            expect(atomicProperties.getByName(ProtoPropertyEnum.atomic_constraints).ids).toEqual([
-                1, 2, 3,
+            expect(atomicProperties.getByName(ProtoPropertyEnum.atomic_labels).toJSON()).toEqual([
+                { id: 1, value: 2 },
+            ]);
+            expect(
+                atomicProperties.getByName(ProtoPropertyEnum.atomic_constraints).toJSON(),
+            ).toEqual([
+                { id: 1, value: [true, true, true] },
+                { id: 2, value: [true, true, true] },
+                { id: 3, value: [true, true, true] },
             ]);
         });
 
@@ -1402,11 +1407,36 @@ describe("Interactive structure editor functionality tests", () => {
 
             const [committedMaterial] = structureModifiedCalls[0];
             const { atomicProperties } = committedMaterial.getBasis();
-            expect(atomicProperties.getByName(ProtoPropertyEnum.atomic_labels).ids).toEqual([1]);
-            expect(atomicProperties.getByName(ProtoPropertyEnum.atomic_labels).values).toEqual([2]);
-            expect(atomicProperties.getByName(ProtoPropertyEnum.atomic_constraints).ids).toEqual([
-                1, 3,
+            expect(atomicProperties.getByName(ProtoPropertyEnum.atomic_labels).toJSON()).toEqual([
+                { id: 1, value: 2 },
             ]);
+            expect(
+                atomicProperties.getByName(ProtoPropertyEnum.atomic_constraints).toJSON(),
+            ).toEqual([
+                { id: 1, value: [true, true, true] },
+                { id: 3, value: [true, true, true] },
+            ]);
+        });
+
+        test("Cloning an atom gives the clone the source atom's label and constraint", () => {
+            const { wave, structureModifiedCalls } = getWaveWithRecordedCallbacks({
+                material: new Made.Material(FeO_CONFIG),
+            });
+            const [firstAtom] = wave.collectSelectableAtoms();
+            wave.setSelectedAtomMeshes([firstAtom]);
+
+            wave.cloneSelectedAtoms();
+
+            const [committedMaterial] = structureModifiedCalls[0];
+            const { atomicProperties } = committedMaterial.getBasis();
+            expect(atomicProperties.getByName(ProtoPropertyEnum.atomic_labels).toJSON()).toEqual([
+                { id: 0, value: 1 },
+                { id: 1, value: 2 },
+                { id: 4, value: 1 },
+            ]);
+            expect(
+                atomicProperties.getByName(ProtoPropertyEnum.atomic_constraints).toJSON(),
+            ).toContainEqual({ id: 4, value: [true, true, true] });
         });
     });
 });

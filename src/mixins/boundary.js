@@ -99,6 +99,8 @@ export const BoundaryMixin = (superclass) =>
 
         /**
          * Returns a basis with elements inside boundary conditions.
+         * The boundaries sit at z = ±(c/2 + offset) (boundaryMeshObjectZOffset), so an atom at
+         * crystal z above 0.5 is shifted by -1 along c to its periodic image between them.
          */
         get basisWithElementsInsideNonPeriodicBoundaries() {
             const newBasis = this.basis.clone();

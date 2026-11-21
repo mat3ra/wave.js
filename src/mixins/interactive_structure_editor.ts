@@ -983,12 +983,10 @@ export const InteractiveStructureEditorMixin = (superclass: any) =>
             if (targetIndices.size === 0) return;
 
             const newMaterial = this.applyBasisDelta_((basis: any) => {
-                const removedIds = new Set(
-                    [...targetIndices]
-                        .map((index) => basis.elements[index]?.id)
-                        .filter((id) => id !== undefined),
+                basis.filterAtomsByIds(
+                    [...targetIndices].map((index) => basis.elements[index].id),
+                    true,
                 );
-                basis.filterAtomsByIds([...removedIds], true);
             });
 
             this.clearSelection();
@@ -1037,9 +1035,6 @@ export const InteractiveStructureEditorMixin = (superclass: any) =>
                     .some((existing) => existing.distanceTo(position) < OCCUPIED_TOLERANCE);
 
             const sourceAtoms = this.selectedMeshes_.map((mesh: THREE.Mesh) => {
-                const elementEntry = elements[mesh.userData.atomicIndex];
-                const element =
-                    typeof elementEntry === "string" ? elementEntry : elementEntry?.value ?? "Si";
                 let attempts = 1;
                 let candidate = mesh.position.clone().add(OFFSET_STEP);
                 while (isOccupied(candidate) && attempts < MAX_OFFSET_ATTEMPTS) {
@@ -1049,15 +1044,18 @@ export const InteractiveStructureEditorMixin = (superclass: any) =>
                         .add(OFFSET_STEP.clone().multiplyScalar(attempts));
                 }
                 placedPositions.push(candidate);
-                return { element, position: candidate };
+                return { id: elements[mesh.userData.atomicIndex].id, position: candidate };
             });
 
             const newMaterial = this.applyBasisDelta_((basis: any) => {
-                sourceAtoms.forEach(({ element, position }: any) => {
+                sourceAtoms.forEach(({ id, position }: any) => {
                     const coordinate = basis.isInCartesianUnits
                         ? position.toArray()
                         : basis.cell.convertPointToCrystal(position.toArray());
-                    basis.addAtom({ element, coordinate });
+                    // resetIds numbers the kept atom 0, so the clone is added with the next free id
+                    const clonedAtom = basis.clone().filterAtomsByIds(id, false, true);
+                    clonedAtom.coordinates = [{ id: 0, value: coordinate }];
+                    basis.addAtomsFromAnotherBasis(clonedAtom);
                 });
             });
 

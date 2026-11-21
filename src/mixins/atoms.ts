@@ -113,7 +113,7 @@ export const AtomsMixin = (superclass: any) =>
                         atomicIndex,
                     };
                     const atomColor = this.getAtomColorByElement(element).toLowerCase();
-                    const label = atomicLabelsArray[atomicIndex] || 0;
+                    const label = atomicLabelsArray[atomicIndex];
                     // set glow according to the label value as offset, currently
                     // only single digit numeric labels are allowed, in practice we
                     // expect only two different labels: 1 and 2 for up and down
