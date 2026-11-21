@@ -38,32 +38,40 @@
             }
         ],
         "units": "crystal",
-        "labels": [
+        "atomic_properties": [
             {
-                "id": 0,
-                "value": 1
+                "name": "atomic_labels",
+                "values": [
+                    {
+                        "id": 0,
+                        "value": 1
+                    },
+                    {
+                        "id": 1,
+                        "value": 2
+                    }
+                ]
             },
             {
-                "id": 1,
-                "value": 2
-            }
-        ],
-        "constraints": [
-            {
-                "id": 0,
-                "value": [true, true, true]
-            },
-            {
-                "id": 1,
-                "value": [true, true, true]
-            },
-            {
-                "id": 2,
-                "value": [true, true, true]
-            },
-            {
-                "id": 3,
-                "value": [true, true, true]
+                "name": "atomic_constraints",
+                "values": [
+                    {
+                        "id": 0,
+                        "value": [true, true, true]
+                    },
+                    {
+                        "id": 1,
+                        "value": [true, true, true]
+                    },
+                    {
+                        "id": 2,
+                        "value": [true, true, true]
+                    },
+                    {
+                        "id": 3,
+                        "value": [true, true, true]
+                    }
+                ]
             }
         ]
     },
