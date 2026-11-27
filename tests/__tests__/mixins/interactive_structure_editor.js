@@ -1,4 +1,4 @@
-import { Made, ProtoPropertyEnum } from "@mat3ra/made";
+import { Made } from "@mat3ra/made";
 import expect from "expect";
 import * as THREE from "three";
 
@@ -1382,13 +1382,9 @@ describe("Interactive structure editor functionality tests", () => {
             wave.removeSelectedAtom();
 
             const [committedMaterial] = structureModifiedCalls[0];
-            const { atomicProperties } = committedMaterial.getBasis();
-            expect(atomicProperties.getByName(ProtoPropertyEnum.atomic_labels).toJSON()).toEqual([
-                { id: 1, value: 2 },
-            ]);
-            expect(
-                atomicProperties.getByName(ProtoPropertyEnum.atomic_constraints).toJSON(),
-            ).toEqual([
+            const basis = committedMaterial.getBasis();
+            expect(basis.labels.toJSON()).toEqual([{ id: 1, value: 2 }]);
+            expect(basis.AtomicConstraints.toJSON()).toEqual([
                 { id: 1, value: [true, true, true] },
                 { id: 2, value: [true, true, true] },
                 { id: 3, value: [true, true, true] },
@@ -1406,13 +1402,9 @@ describe("Interactive structure editor functionality tests", () => {
             wave.removeSelectedAtom();
 
             const [committedMaterial] = structureModifiedCalls[0];
-            const { atomicProperties } = committedMaterial.getBasis();
-            expect(atomicProperties.getByName(ProtoPropertyEnum.atomic_labels).toJSON()).toEqual([
-                { id: 1, value: 2 },
-            ]);
-            expect(
-                atomicProperties.getByName(ProtoPropertyEnum.atomic_constraints).toJSON(),
-            ).toEqual([
+            const basis = committedMaterial.getBasis();
+            expect(basis.labels.toJSON()).toEqual([{ id: 1, value: 2 }]);
+            expect(basis.AtomicConstraints.toJSON()).toEqual([
                 { id: 1, value: [true, true, true] },
                 { id: 3, value: [true, true, true] },
             ]);
@@ -1428,15 +1420,16 @@ describe("Interactive structure editor functionality tests", () => {
             wave.cloneSelectedAtoms();
 
             const [committedMaterial] = structureModifiedCalls[0];
-            const { atomicProperties } = committedMaterial.getBasis();
-            expect(atomicProperties.getByName(ProtoPropertyEnum.atomic_labels).toJSON()).toEqual([
+            const basis = committedMaterial.getBasis();
+            expect(basis.labels.toJSON()).toEqual([
                 { id: 0, value: 1 },
                 { id: 1, value: 2 },
                 { id: 4, value: 1 },
             ]);
-            expect(
-                atomicProperties.getByName(ProtoPropertyEnum.atomic_constraints).toJSON(),
-            ).toContainEqual({ id: 4, value: [true, true, true] });
+            expect(basis.AtomicConstraints.toJSON()).toContainEqual({
+                id: 4,
+                value: [true, true, true],
+            });
         });
     });
 });

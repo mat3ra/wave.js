@@ -1052,10 +1052,7 @@ export const InteractiveStructureEditorMixin = (superclass: any) =>
                     const coordinate = basis.isInCartesianUnits
                         ? position.toArray()
                         : basis.cell.convertPointToCrystal(position.toArray());
-                    // resetIds numbers the kept atom 0, so the clone is added with the next free id
-                    const clonedAtom = basis.clone().filterAtomsByIds(id, false, true);
-                    clonedAtom.coordinates = [{ id: 0, value: coordinate }];
-                    basis.addAtomsFromAnotherBasis(clonedAtom);
+                    basis.addCopyOfAtom(id, coordinate);
                 });
             });
 
