@@ -1053,7 +1053,7 @@ export const InteractiveStructureEditorMixin = (superclass: any) =>
             });
 
             const newMaterial = this.applyBasisDelta_((basis) => {
-                sourceAtoms.forEach(({ id, position }: any) => {
+                sourceAtoms.forEach(({ id, position }) => {
                     const coordinate = basis.isInCartesianUnits
                         ? position.toArray()
                         : basis.cell.convertPointToCrystal(position.toArray());
