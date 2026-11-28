@@ -1384,7 +1384,7 @@ describe("Interactive structure editor functionality tests", () => {
             const [committedMaterial] = structureModifiedCalls[0];
             const basis = committedMaterial.getBasis();
             expect(basis.labels.toJSON()).toEqual([{ id: 1, value: 2 }]);
-            expect(basis.AtomicConstraints.toJSON()).toEqual([
+            expect(basis.constraints.toJSON()).toEqual([
                 { id: 1, value: [true, true, true] },
                 { id: 2, value: [true, true, true] },
                 { id: 3, value: [true, true, true] },
@@ -1404,7 +1404,7 @@ describe("Interactive structure editor functionality tests", () => {
             const [committedMaterial] = structureModifiedCalls[0];
             const basis = committedMaterial.getBasis();
             expect(basis.labels.toJSON()).toEqual([{ id: 1, value: 2 }]);
-            expect(basis.AtomicConstraints.toJSON()).toEqual([
+            expect(basis.constraints.toJSON()).toEqual([
                 { id: 1, value: [true, true, true] },
                 { id: 3, value: [true, true, true] },
             ]);
@@ -1426,7 +1426,7 @@ describe("Interactive structure editor functionality tests", () => {
                 { id: 1, value: 2 },
                 { id: 4, value: 1 },
             ]);
-            expect(basis.AtomicConstraints.toJSON()).toContainEqual({
+            expect(basis.constraints.toJSON()).toContainEqual({
                 id: 4,
                 value: [true, true, true],
             });
