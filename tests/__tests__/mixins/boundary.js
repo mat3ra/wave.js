@@ -37,3 +37,18 @@ test("basisWithElementsInsideNonPeriodicBoundaries keeps atom ids and each atom'
     expect(basis.elements.map(({ id }) => id)).toEqual([1, 2, 3]);
     expect(basis.elementsWithLabelsArray).toEqual(["Fe2", "O", "O"]);
 });
+
+test("basisWithElementsInsideNonPeriodicBoundaries moves an atom below the lower boundary up by c", () => {
+    const instance = new BoundaryMixinTestClass({
+        boundaryConditions: { type: "bc1", offset: 0 },
+    });
+    instance.basis.toCrystal();
+    instance.basis.coordinates = [
+        { id: 0, value: [0, 0, -0.7] },
+        ...instance.basis.coordinates.slice(1),
+    ];
+
+    const [coordinate] = instance.basisWithElementsInsideNonPeriodicBoundaries.coordinates;
+
+    expect(coordinate.value[2]).toBeCloseTo(0.3);
+});

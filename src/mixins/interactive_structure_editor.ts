@@ -955,7 +955,7 @@ export const InteractiveStructureEditorMixin = (superclass: any) =>
             const targetIndex = this.selectedMesh_.userData.atomicIndex;
 
             const newMaterial = this.applyBasisDelta_((basis: any) => {
-                const removedId = basis.elements[targetIndex]?.id;
+                const removedId = basis.elements[targetIndex].id;
                 basis.filterAtomsByIds(removedId, true);
             });
 
