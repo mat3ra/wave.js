@@ -99,28 +99,20 @@ export const BoundaryMixin = (superclass) =>
 
         /**
          * Returns a basis with elements inside boundary conditions.
+         * The boundaries sit at z = ±(c/2 + offset) (boundaryMeshObjectZOffset), so an atom at
+         * crystal |z| above 0.5 is shifted by one c vector to its periodic image between them.
          */
         get basisWithElementsInsideNonPeriodicBoundaries() {
             const newBasis = this.basis.clone();
-            newBasis.elements = [];
-            newBasis.coordinates = [];
-
-            const basisCloneInCrystalCoordinates = this.basis.clone();
-
             newBasis.toCrystal();
-            basisCloneInCrystalCoordinates.toCrystal();
-
-            basisCloneInCrystalCoordinates.elements.forEach((element, index) => {
-                const coord = basisCloneInCrystalCoordinates.getCoordinateValueByIndex(index);
-                newBasis.addAtom({
-                    element,
-                    coordinate: [
-                        coord[0],
-                        coord[1],
-                        Math.abs(coord[2]) <= 0.5 ? coord[2] : coord[2] - 1,
-                    ],
-                });
-            });
+            newBasis.coordinates = newBasis.coordinates.map(({ id, value }) => ({
+                id,
+                value: [
+                    value[0],
+                    value[1],
+                    Math.abs(value[2]) <= 0.5 ? value[2] : value[2] - Math.sign(value[2]),
+                ],
+            }));
 
             if (this.basis.isInCartesianUnits) newBasis.toCartesian();
             return newBasis;

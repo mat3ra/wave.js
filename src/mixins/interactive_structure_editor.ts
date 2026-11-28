@@ -1,3 +1,5 @@
+import type { AtomicElementSchema } from "@mat3ra/esse/dist/js/types";
+import type { BasisWithAtomicProperties } from "@mat3ra/made";
 import * as THREE from "three";
 import { TransformControls } from "three/examples/jsm/controls/TransformControls";
 
@@ -906,7 +908,7 @@ export const InteractiveStructureEditorMixin = (superclass: any) =>
          * as phantom atoms (D5) - a class of bug that a delta applied to the known material
          * cannot reintroduce, because the lattice and every untouched atom are never recomputed.
          */
-        applyBasisDelta_(mutateBasis: (basis: any) => void): any {
+        applyBasisDelta_(mutateBasis: (basis: BasisWithAtomicProperties) => void): any {
             const updatedMaterial = this.structure.clone();
             const basis = updatedMaterial.getBasis();
             mutateBasis(basis);
@@ -920,8 +922,11 @@ export const InteractiveStructureEditorMixin = (superclass: any) =>
          * @param {string} elementName - Chemical element symbol (e.g. "Si").
          * @param {Array<number>} cartesianCoordinates - [x, y, z] position in Cartesian space.
          */
-        addAtom(elementName: string, cartesianCoordinates: Coordinate3D): void {
-            const newMaterial = this.applyBasisDelta_((basis: any) => {
+        addAtom(
+            elementName: AtomicElementSchema["value"],
+            cartesianCoordinates: Coordinate3D,
+        ): void {
+            const newMaterial = this.applyBasisDelta_((basis) => {
                 const coordinate = basis.isInCartesianUnits
                     ? cartesianCoordinates
                     : basis.cell.convertPointToCrystal(cartesianCoordinates);
@@ -954,22 +959,9 @@ export const InteractiveStructureEditorMixin = (superclass: any) =>
             if (!this.selectedMesh_) return;
             const targetIndex = this.selectedMesh_.userData.atomicIndex;
 
-            const newMaterial = this.applyBasisDelta_((basis: any) => {
-                const removedId = basis.elements[targetIndex]?.id;
-                basis.elements = basis.elements.filter(
-                    (_element: any, index: number) => index !== targetIndex,
-                );
-                basis.coordinates = basis.coordinates.filter(
-                    (_coordinate: any, index: number) => index !== targetIndex,
-                );
-                if (basis.labels?.length) {
-                    basis.labels = basis.labels.filter((label: any) => label.id !== removedId);
-                }
-                if (basis.constraints?.length) {
-                    basis.constraints = basis.constraints.filter(
-                        (constraint: any) => constraint.id !== removedId,
-                    );
-                }
+            const newMaterial = this.applyBasisDelta_((basis) => {
+                const removedId = basis.elements[targetIndex].id;
+                basis.filterAtomsByIds(removedId, true);
             });
 
             this.clearSelection();
@@ -995,26 +987,11 @@ export const InteractiveStructureEditorMixin = (superclass: any) =>
             );
             if (targetIndices.size === 0) return;
 
-            const newMaterial = this.applyBasisDelta_((basis: any) => {
-                const removedIds = new Set(
-                    [...targetIndices]
-                        .map((index) => basis.elements[index]?.id)
-                        .filter((id) => id !== undefined),
+            const newMaterial = this.applyBasisDelta_((basis) => {
+                basis.filterAtomsByIds(
+                    [...targetIndices].map((index) => basis.elements[index].id),
+                    true,
                 );
-                basis.elements = basis.elements.filter(
-                    (_element: any, index: number) => !targetIndices.has(index),
-                );
-                basis.coordinates = basis.coordinates.filter(
-                    (_coordinate: any, index: number) => !targetIndices.has(index),
-                );
-                if (basis.labels?.length) {
-                    basis.labels = basis.labels.filter((label: any) => !removedIds.has(label.id));
-                }
-                if (basis.constraints?.length) {
-                    basis.constraints = basis.constraints.filter(
-                        (constraint: any) => !removedIds.has(constraint.id),
-                    );
-                }
             });
 
             this.clearSelection();
@@ -1063,9 +1040,6 @@ export const InteractiveStructureEditorMixin = (superclass: any) =>
                     .some((existing) => existing.distanceTo(position) < OCCUPIED_TOLERANCE);
 
             const sourceAtoms = this.selectedMeshes_.map((mesh: THREE.Mesh) => {
-                const elementEntry = elements[mesh.userData.atomicIndex];
-                const element =
-                    typeof elementEntry === "string" ? elementEntry : elementEntry?.value ?? "Si";
                 let attempts = 1;
                 let candidate = mesh.position.clone().add(OFFSET_STEP);
                 while (isOccupied(candidate) && attempts < MAX_OFFSET_ATTEMPTS) {
@@ -1075,15 +1049,15 @@ export const InteractiveStructureEditorMixin = (superclass: any) =>
                         .add(OFFSET_STEP.clone().multiplyScalar(attempts));
                 }
                 placedPositions.push(candidate);
-                return { element, position: candidate };
+                return { id: elements[mesh.userData.atomicIndex].id, position: candidate };
             });
 
-            const newMaterial = this.applyBasisDelta_((basis: any) => {
-                sourceAtoms.forEach(({ element, position }: any) => {
+            const newMaterial = this.applyBasisDelta_((basis) => {
+                sourceAtoms.forEach(({ id, position }) => {
                     const coordinate = basis.isInCartesianUnits
                         ? position.toArray()
                         : basis.cell.convertPointToCrystal(position.toArray());
-                    basis.addAtom({ element, coordinate });
+                    basis.addCopyOfAtom(id, coordinate);
                 });
             });
 
@@ -1169,7 +1143,7 @@ export const InteractiveStructureEditorMixin = (superclass: any) =>
             source: string,
         ): void {
             if (!moves.length) return;
-            const newMaterial = this.applyBasisDelta_((basis: any) => {
+            const newMaterial = this.applyBasisDelta_((basis) => {
                 const { coordinates } = basis;
                 moves.forEach(({ atomicIndex, position }) => {
                     if (!coordinates[atomicIndex]) return;

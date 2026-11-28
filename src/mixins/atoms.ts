@@ -1,6 +1,6 @@
 import type { InMemoryEntity } from "@mat3ra/code/dist/js/entity";
 import { AtomicCoordinateSchema } from "@mat3ra/esse/dist/js/types";
-import { Basis, Material } from "@mat3ra/made";
+import { BasisWithAtomicProperties, Material } from "@mat3ra/made";
 import * as THREE from "three";
 import { Object3D } from "three";
 
@@ -92,7 +92,7 @@ export const AtomsMixin = (superclass: any) =>
             };
         }
 
-        createAtomsGroup(basis: Basis, atomRadiiScale: number) {
+        createAtomsGroup(basis: BasisWithAtomicProperties, atomRadiiScale: number) {
             const atomsGroup = new THREE.Group();
             atomsGroup.name = ATOM_GROUP_NAME;
             const { atomicLabelsArray, elementsWithLabelsArray } = basis;
@@ -113,9 +113,8 @@ export const AtomsMixin = (superclass: any) =>
                         atomicIndex,
                     };
                     const atomColor = this.getAtomColorByElement(element).toLowerCase();
-                    const label = parseInt(atomicLabelsArray[atomicIndex], 10) || 0;
-                    // set glow according to the label value as offset, currently
-                    // only single digit numeric labels are allowed, in practice we
+                    const label = atomicLabelsArray[atomicIndex];
+                    // set glow according to the label value as offset, in practice we
                     // expect only two different labels: 1 and 2 for up and down
                     // spin representations
                     ApplyGlow(sphereMesh, atomColor, label);

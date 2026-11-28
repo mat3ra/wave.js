@@ -1,8 +1,9 @@
+import { Made } from "@mat3ra/made";
 import expect from "expect";
 import * as THREE from "three";
 
 import settings from "../../../src/settings";
-import { getWaveInstance } from "../../enums";
+import { FeO_CONFIG, getWaveInstance } from "../../enums";
 import {
     getWaveWithRecordedCallbacks,
     projectMeshToScreen,
@@ -1366,6 +1367,69 @@ describe("Interactive structure editor functionality tests", () => {
             const [committedMaterial] = structureModifiedCalls[structureModifiedCalls.length - 1];
             const sourceAfter = toValue(committedMaterial.basis.coordinates[sourceIndex]);
             expect(sourceAfter).toEqual(sourceBefore);
+        });
+    });
+
+    describe("Atomic properties follow atom ids in edits", () => {
+        // FeO_CONFIG labels atoms 0 and 1 and constrains all four atoms.
+        test("Removing a single atom keeps the other atoms' labels and constraints", () => {
+            const { wave, structureModifiedCalls } = getWaveWithRecordedCallbacks({
+                material: new Made.Material(FeO_CONFIG),
+            });
+            const [firstAtom] = wave.collectSelectableAtoms();
+            wave.selectedMesh_ = firstAtom;
+
+            wave.removeSelectedAtom();
+
+            const [committedMaterial] = structureModifiedCalls[0];
+            const basis = committedMaterial.getBasis();
+            expect(basis.labels.toJSON()).toEqual([{ id: 1, value: 2 }]);
+            expect(basis.constraints.toJSON()).toEqual([
+                { id: 1, value: [true, true, true] },
+                { id: 2, value: [true, true, true] },
+                { id: 3, value: [true, true, true] },
+            ]);
+        });
+
+        test("Removing a multi-selection keeps the other atoms' labels and constraints", () => {
+            const { wave, structureModifiedCalls } = getWaveWithRecordedCallbacks({
+                material: new Made.Material(FeO_CONFIG),
+            });
+            wave.enableEditMode(true);
+            const atoms = wave.collectSelectableAtoms();
+            wave.setSelectedAtomMeshes([atoms[0], atoms[2]]);
+
+            wave.removeSelectedAtom();
+
+            const [committedMaterial] = structureModifiedCalls[0];
+            const basis = committedMaterial.getBasis();
+            expect(basis.labels.toJSON()).toEqual([{ id: 1, value: 2 }]);
+            expect(basis.constraints.toJSON()).toEqual([
+                { id: 1, value: [true, true, true] },
+                { id: 3, value: [true, true, true] },
+            ]);
+        });
+
+        test("Cloning an atom gives the clone the source atom's label and constraint", () => {
+            const { wave, structureModifiedCalls } = getWaveWithRecordedCallbacks({
+                material: new Made.Material(FeO_CONFIG),
+            });
+            const [firstAtom] = wave.collectSelectableAtoms();
+            wave.setSelectedAtomMeshes([firstAtom]);
+
+            wave.cloneSelectedAtoms();
+
+            const [committedMaterial] = structureModifiedCalls[0];
+            const basis = committedMaterial.getBasis();
+            expect(basis.labels.toJSON()).toEqual([
+                { id: 0, value: 1 },
+                { id: 1, value: 2 },
+                { id: 4, value: 1 },
+            ]);
+            expect(basis.constraints.toJSON()).toContainEqual({
+                id: 4,
+                value: [true, true, true],
+            });
         });
     });
 });
